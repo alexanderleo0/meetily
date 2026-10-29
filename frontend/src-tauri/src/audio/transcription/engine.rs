@@ -88,6 +88,7 @@ pub async fn validate_transcription_model_ready<R: Runtime>(app: &AppHandle<R>) 
 
     // Validate based on provider
     match config.provider.as_str() {
+        "gigaam" => crate::gigaam_engine::load(app, &config.model).await.map(|_| ()).map_err(|e| format!("{e:#}")),
         "localWhisper" => {
             info!("🔍 Validating Whisper model...");
             // Ensure whisper engine is initialized first
@@ -184,6 +185,10 @@ pub async fn get_or_init_transcription_engine<R: Runtime>(
 
     // Initialize the appropriate engine based on provider
     match config.provider.as_str() {
+        "gigaam" => {
+            let engine = crate::gigaam_engine::load(app, &config.model).await.map_err(|e| format!("{e:#}"))?;
+            Ok(TranscriptionEngine::Provider(engine))
+        }
         "parakeet" => {
             info!("🦜 Initializing Parakeet transcription engine");
 

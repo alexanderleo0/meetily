@@ -118,7 +118,7 @@ interface LanguageSelectionProps {
   selectedLanguage: string;
   onLanguageChange: (language: string) => void;
   disabled?: boolean;
-  provider?: 'localWhisper' | 'parakeet' | 'deepgram' | 'elevenLabs' | 'groq' | 'openai';
+  provider?: 'localWhisper' | 'gigaam' | 'parakeet' | 'deepgram' | 'elevenLabs' | 'groq' | 'openai';
 }
 
 export function LanguageSelection({
@@ -172,6 +172,11 @@ export function LanguageSelection({
   const selectedLanguageName = LANGUAGES.find(
     lang => lang.code === selectedLanguage
   )?.name || 'Auto Detect (Original Language)';
+
+  if (provider === 'gigaam') return <div className="space-y-2">
+    <h4 className="text-sm font-medium">Transcription Language</h4>
+    <p className="text-sm text-gray-600">Russian · GigaAM v3 E2E RNNT</p>
+  </div>;
 
   return (
     <div className="space-y-4">

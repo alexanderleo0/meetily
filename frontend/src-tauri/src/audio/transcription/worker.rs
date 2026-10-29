@@ -519,6 +519,7 @@ async fn transcribe_chunk_with_provider<R: Runtime>(
             // NEW: Trait-based provider (clean, unified interface)
             let language = crate::get_language_preference_internal();
 
+            let language = if provider.provider_name() == "GigaAM" { Some("ru".into()) } else { language };
             match provider.transcribe(speech_samples, language).await {
                 Ok(result) => {
                     let cleaned_text = result.text.trim().to_string();

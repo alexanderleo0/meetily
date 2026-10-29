@@ -191,16 +191,20 @@ pub async fn complete_onboarding<R: Runtime>(
     }
     info!("Saved builtin-ai model config: model={}", model);
 
-    // Save transcription model config (parakeet provider) - always parakeet
+    // Preserve the explicitly selected local engine, including GigaAM onboarding.
+    let selected_transcript = SettingsRepository::get_transcript_config(pool).await
+        .map_err(|e| format!("Failed to read transcription config: {e}"))?;
+    let use_gigaam = selected_transcript.as_ref().map(|c| c.provider.as_str()) == Some("gigaam");
+    // Parakeet remains the default for the existing onboarding path.
     if let Err(e) = SettingsRepository::save_transcript_config(
         pool,
-        "parakeet",
-        crate::config::DEFAULT_PARAKEET_MODEL,
+        if use_gigaam { "gigaam" } else { "parakeet" },
+        if use_gigaam { crate::gigaam_engine::MODEL } else { crate::config::DEFAULT_PARAKEET_MODEL },
     ).await {
         error!("Failed to save transcription model config: {}", e);
         return Err(format!("Failed to save transcription model config: {}", e));
     }
-    info!("Saved transcription model config: provider=parakeet, model={}", crate::config::DEFAULT_PARAKEET_MODEL);
+    info!("Saved transcription model config: provider={}", if use_gigaam { "gigaam" } else { "parakeet" });
 
     // Step 2: Only NOW mark onboarding as complete (after DB operations succeed)
     let mut status = load_onboarding_status(&app)
@@ -209,7 +213,7 @@ pub async fn complete_onboarding<R: Runtime>(
 
     status.completed = true;
     status.current_step = 4; // Max step (4 on macOS with permissions, 3 on other platforms)
-    status.model_status.parakeet = "downloaded".to_string();
+    status.model_status.parakeet = if use_gigaam { "not_downloaded" } else { "downloaded" }.to_string();
     status.model_status.summary = "downloaded".to_string();
     status.model_status.selected_summary_model = Some(model.clone());
 

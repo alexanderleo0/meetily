@@ -843,9 +843,7 @@ version = "0.11.3"
 source = "git+https://github.com/yury/cidre?rev=a9587fa#a9587fa1d4ff6f0d5d082849ae7c62880fd739f7"
 dependencies = [
  "cidre-macros",
- "half",
  "parking_lot",
- "tokio",
 ]
 
 [[package]]

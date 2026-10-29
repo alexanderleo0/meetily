@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { OnboardingContainer } from '../OnboardingContainer';
+import { useConfig } from '@/contexts/ConfigContext';
 import { useOnboarding } from '@/contexts/OnboardingContext';
 import {
   Tooltip,
@@ -12,6 +13,7 @@ import {
 
 export function SetupOverviewStep() {
   const { goNext } = useOnboarding();
+  const { transcriptModelConfig, setTranscriptModelConfig } = useConfig();
   const [isMac, setIsMac] = useState(false);
 
   useEffect(() => {
@@ -87,6 +89,18 @@ export function SetupOverviewStep() {
           </div>
         </div>
 
+
+        {isMac && <div className="w-full max-w-md space-y-2">
+          <label htmlFor="setup-transcription" className="text-sm font-medium">Transcription engine</label>
+          <select id="setup-transcription" className="w-full rounded border p-2"
+            value={transcriptModelConfig.provider}
+            onChange={e => setTranscriptModelConfig(e.target.value === 'gigaam'
+              ? { provider: 'gigaam', model: 'gigaam-v3-e2e-rnnt-int8', apiKey: null }
+              : { provider: 'parakeet', model: 'parakeet-tdt-0.6b-v3-int8', apiKey: null })}>
+            <option value="parakeet">Parakeet · Multilingual · 670 MB</option>
+            <option value="gigaam">GigaAM v3 · Russian · Apple Silicon · 227 MB</option>
+          </select>
+        </div>}
 
         {/* CTA Section */}
         <div className="w-full max-w-xs space-y-4">

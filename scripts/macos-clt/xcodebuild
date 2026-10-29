@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+"""Build cidre's static Objective-C shims with Apple's Command Line Tools.
+
+Only handles the pinned cidre pomace project, never general Xcode projects.
+Use the real xcodebuild when a full Xcode installation is available.
+"""
+import pathlib
+import subprocess
+import sys
+
+args = sys.argv[1:]
+
+def value(flag, default=None):
+    return args[args.index(flag) + 1] if flag in args else default
+
+if value('-project') != './pomace/pomace.xcodeproj' or not pathlib.Path('pomace/pomace.xcodeproj').is_dir():
+    sys.exit('CLT adapter only supports cidre pomace static libraries')
+if value('-sdk') != 'macosx':
+    sys.exit('CLT adapter only supports macOS')
+configuration = value('-configuration', 'Release')
+arch = value('-arch', 'arm64')
+symroot = next((a.split('=', 1)[1] for a in args if a.startswith('SYMROOT=')), None)
+if not symroot:
+    sys.exit('Missing SYMROOT')
+out = pathlib.Path(symroot) / configuration
+out.mkdir(parents=True, exist_ok=True)
+sdk = subprocess.check_output(['xcrun', '--sdk', 'macosx', '--show-sdk-path'], text=True).strip()
+deployment = next((a.split('=', 1)[1] for a in args if a.startswith('MACOSX_DEPLOYMENT_TARGET=')), '15.0')
+targets = [args[i + 1] for i, a in enumerate(args) if a == '-target']
+for target in targets:
+    source = pathlib.Path('pomace') / target
+    if not source.is_dir() or not target.replace('_', '').isalnum():
+        sys.exit(f'Unknown pomace target: {target}')
+    objects = []
+    for src in sorted(source.glob('*.m')):
+        obj = out / f'{target}-{src.stem}.o'
+        subprocess.run(['xcrun', 'clang', '-arch', arch, '-isysroot', sdk,
+            f'-mmacosx-version-min={deployment}', '-fobjc-arc', '-fobjc-weak',
+            '-fmodules', '-fblocks', '-fno-common', '-O2', '-c', str(src), '-o', str(obj)], check=True)
+        objects.append(str(obj))
+    if not objects:
+        sys.exit(f'No Objective-C source for {target}')
+    subprocess.run(['xcrun', 'libtool', '-static', '-o', str(out / f'lib{target}.a'), *objects], check=True)

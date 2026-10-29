@@ -8,7 +8,7 @@ export interface RawModelInfo {
 }
 
 export interface ModelOption {
-  provider: 'whisper' | 'parakeet';
+  provider: 'whisper' | 'parakeet' | 'gigaam';
   name: string;
   displayName: string;
   size_mb: number;
@@ -77,6 +77,14 @@ export function useTranscriptionModels(transcriptModelConfig: TranscriptModelCon
       console.error('Failed to fetch Parakeet models:', err);
     }
 
+    try {
+      const models = await invoke<RawModelInfo[]>('gigaam_get_available_models');
+      allModels.push(...models.filter(m => m.status === 'Available').map(m => ({
+        provider: 'gigaam' as const, name: m.name,
+        displayName: 'GigaAM v3 E2E RNNT · Russian', size_mb: m.size_mb,
+      })));
+    } catch (err) { console.error('Failed to fetch GigaAM models:', err); }
+
     setAvailableModels(allModels);
 
     // Set default model based on user's saved configuration
@@ -88,7 +96,7 @@ export function useTranscriptionModels(transcriptModelConfig: TranscriptModelCon
     const configuredMatch = allModels.find(
       (m) =>
         (configuredProvider === 'localWhisper' && m.provider === 'whisper' && m.name === configuredModel) ||
-        (configuredProvider === 'parakeet' && m.provider === 'parakeet' && m.name === configuredModel)
+        ((configuredProvider === 'parakeet' || configuredProvider === 'gigaam') && m.provider === configuredProvider && m.name === configuredModel)
     );
 
     // Only set default model if user hasn't manually selected one

@@ -4,6 +4,8 @@ import { listen } from '@tauri-apps/api/event';
 import { Mic, Sparkles, Check, Loader2, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { OnboardingContainer } from '../OnboardingContainer';
+import { useConfig } from '@/contexts/ConfigContext';
+import { GigaAMModelManager } from '@/components/GigaAMModelManager';
 import { useOnboarding } from '@/contexts/OnboardingContext';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -24,6 +26,26 @@ interface DownloadState {
 }
 
 export function DownloadProgressStep() {
+  const { transcriptModelConfig } = useConfig();
+  return transcriptModelConfig.provider === 'gigaam' ? <GigaAMDownloadStep /> : <ParakeetDownloadStep />;
+}
+
+function GigaAMDownloadStep() {
+  const { goNext } = useOnboarding();
+  const { setTranscriptModelConfig } = useConfig();
+  const [ready, setReady] = useState(false);
+  return <OnboardingContainer title="Download GigaAM" description="GigaAM runs locally on your Mac. Select the downloaded model, then continue to audio permissions." step={3} totalSteps={4}>
+    <div className="space-y-4">
+      <GigaAMModelManager onModelSelect={model => {
+        setTranscriptModelConfig({ provider: 'gigaam', model, apiKey: null });
+        setReady(true);
+      }} />
+      <Button disabled={!ready} onClick={goNext}>Continue</Button>
+    </div>
+  </OnboardingContainer>;
+}
+
+function ParakeetDownloadStep() {
   const {
     goNext,
     selectedSummaryModel,

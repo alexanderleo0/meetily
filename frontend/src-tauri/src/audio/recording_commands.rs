@@ -846,6 +846,7 @@ pub async fn stop_recording<R: Runtime>(
     };
 
     match config.as_deref() {
+        Some("gigaam") => crate::gigaam_engine::unload().await,
         Some("parakeet") => {
             info!("🦜 Unloading Parakeet model...");
             let engine_clone = {

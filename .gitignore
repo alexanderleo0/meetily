@@ -77,3 +77,22 @@ experiments/
 target/
 
 frontend/src-tauri/binaries/
+# Private validation inputs, outputs, environments, and model caches
+.venv/
+.cache/
+__pycache__/
+/audio/
+/results/
+*.m4a
+*.wav
+*.mp3
+*.flac
+*.onnx
+*.part
+/docs/onnx-comparison/audio/
+/docs/onnx-comparison/results/
+*.f32
+*.pcm
+*.aac
+*.aiff
+*.opus

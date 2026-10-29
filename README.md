@@ -1,3 +1,5 @@
+> **GigaAM fork (macOS Apple Silicon):** native GigaAM v3 E2E RNNT is available alongside Parakeet and Whisper. See [build and usage instructions](docs/GIGAAM.md).
+
 <div align="center" style="border-bottom: none">
     <h1>
         <img src="docs/Meetily-6.png" style="border-radius: 10px;" />

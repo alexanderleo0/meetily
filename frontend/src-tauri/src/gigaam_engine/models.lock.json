@@ -1,0 +1,32 @@
+{
+  "revision": "322c3b29492673eb7d0b434bfa9dfb8653e34d02",
+  "files": {
+    "config.json": {
+      "bytes": 135,
+      "sha256": "0641fcf73f4af791c73f05083e38a658ff5dcbee3534a0c61396c10f4b97f0fe"
+    },
+    "v3_e2e_rnnt_decoder.int8.onnx": {
+      "bytes": 1159170,
+      "sha256": "89014e134865615b91e037157e46e389b1271e6072460efc010ea08e61e23146"
+    },
+    "v3_e2e_rnnt_encoder.int8.onnx": {
+      "bytes": 224570477,
+      "sha256": "4e0e076a6076cd110277e529b8ac8f32cd5297f7fbebad5341ae8ddb7d00817b"
+    },
+    "v3_e2e_rnnt_joint.int8.onnx": {
+      "bytes": 687791,
+      "sha256": "ade116563dbf66e503b0994efab6b5861412743e52bf31c39fc3fffa3783d5d1"
+    },
+    "v3_e2e_rnnt_vocab.txt": {
+      "bytes": 13354,
+      "sha256": "39abae20e692998290c574e606f11a9edef2902a1995463fcff63d1490cf22b7"
+    }
+  },
+  "repo": "istupakov/gigaam-v3-onnx",
+  "preprocessor": {
+    "url": "https://github.com/alexanderleo0/meetily/releases/download/gigaam-assets-v1/gigaam_v3.onnx",
+    "bytes": 44430,
+    "sha256": "919c3bc8a434b6e733e5fe5dcd247974d0a7b1f2bc5b6995b6ad55f7225e014d",
+    "source": "onnx-asr 0.12.0 (MIT), PyPI wheel"
+  }
+}

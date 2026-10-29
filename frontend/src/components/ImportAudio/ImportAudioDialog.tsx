@@ -169,13 +169,13 @@ export function ImportAudioDialog({
     const name = selectedModelKey.slice(colonIndex + 1);
     return availableModels.find((m) => m.provider === provider && m.name === name);
   }, [selectedModelKey, availableModels]);
-  const isParakeetModel = selectedModel?.provider === 'parakeet';
+  const hasAutomaticLanguage = selectedModel?.provider === 'parakeet' || selectedModel?.provider === 'gigaam';
 
   useEffect(() => {
-    if (isParakeetModel && selectedLang !== 'auto') {
+    if (hasAutomaticLanguage && selectedLang !== 'auto') {
       setSelectedLang('auto');
     }
-  }, [isParakeetModel, selectedLang]);
+  }, [hasAutomaticLanguage, selectedLang]);
 
   const handleSelectFile = async () => {
     const info = await selectFile();
@@ -190,7 +190,7 @@ export function ImportAudioDialog({
     await startImport(
       fileInfo.path,
       title || fileInfo.filename,
-      isParakeetModel ? null : selectedLang === 'auto' ? null : selectedLang,
+      hasAutomaticLanguage ? null : selectedLang === 'auto' ? null : selectedLang,
       selectedModel?.name || null,
       selectedModel?.provider || null
     );
@@ -343,7 +343,7 @@ export function ImportAudioDialog({
                   {showAdvanced && (
                     <div className="p-3 pt-0 space-y-4 border-t">
                       {/* Language selector */}
-                      {!isParakeetModel ? (
+                      {!hasAutomaticLanguage ? (
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
                             <Globe className="h-4 w-4 text-muted-foreground" />
@@ -369,7 +369,7 @@ export function ImportAudioDialog({
                             <span className="text-sm font-medium">Language</span>
                           </div>
                           <p className="text-xs text-muted-foreground">
-                            Language selection isn't supported for Parakeet. It always uses automatic detection.
+                            {selectedModel?.provider === 'gigaam' ? 'Russian · GigaAM v3 E2E RNNT' : 'Parakeet uses automatic language detection.'}
                           </p>
                         </div>
                       )}

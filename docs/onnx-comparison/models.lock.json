@@ -1,0 +1,61 @@
+{
+  "istupakov/silero-vad-onnx": {
+    "revision": "b3e3ee3cce4c11ceb63b1a0b229d916069c1ddf6",
+    "files": {
+      "config.json": {
+        "bytes": 30,
+        "sha256": "1094039d370c82889582ba739a3d1caac5754c8b3a17a66a534200c9f72086e2"
+      },
+      "silero_vad.onnx": {
+        "bytes": 2327524,
+        "sha256": "1a153a22f4509e292a94e67d6f9b85e8deb25b4988682b7e174c65279d8788e3"
+      }
+    }
+  },
+  "istupakov/gigaam-v3-onnx": {
+    "revision": "322c3b29492673eb7d0b434bfa9dfb8653e34d02",
+    "files": {
+      "config.json": {
+        "bytes": 135,
+        "sha256": "0641fcf73f4af791c73f05083e38a658ff5dcbee3534a0c61396c10f4b97f0fe"
+      },
+      "v3_e2e_rnnt_decoder.int8.onnx": {
+        "bytes": 1159170,
+        "sha256": "89014e134865615b91e037157e46e389b1271e6072460efc010ea08e61e23146"
+      },
+      "v3_e2e_rnnt_encoder.int8.onnx": {
+        "bytes": 224570477,
+        "sha256": "4e0e076a6076cd110277e529b8ac8f32cd5297f7fbebad5341ae8ddb7d00817b"
+      },
+      "v3_e2e_rnnt_joint.int8.onnx": {
+        "bytes": 687791,
+        "sha256": "ade116563dbf66e503b0994efab6b5861412743e52bf31c39fc3fffa3783d5d1"
+      },
+      "v3_e2e_rnnt_vocab.txt": {
+        "bytes": 13354,
+        "sha256": "39abae20e692998290c574e606f11a9edef2902a1995463fcff63d1490cf22b7"
+      }
+    }
+  },
+  "istupakov/parakeet-tdt-0.6b-v3-onnx": {
+    "revision": "8f23f0c03c8761650bdb5b40aaf3e40d2c15f1ce",
+    "files": {
+      "config.json": {
+        "bytes": 97,
+        "sha256": "666903c76b9798caf2c210afd4f6cd60b08a8dbf9800ec8d7a3bc0d2148ac466"
+      },
+      "decoder_joint-model.int8.onnx": {
+        "bytes": 18202004,
+        "sha256": "eea7483ee3d1a30375daedc8ed83e3960c91b098812127a0d99d1c8977667a70"
+      },
+      "encoder-model.int8.onnx": {
+        "bytes": 652183999,
+        "sha256": "6139d2fa7e1b086097b277c7149725edbab89cc7c7ae64b23c741be4055aff09"
+      },
+      "vocab.txt": {
+        "bytes": 93939,
+        "sha256": "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d"
+      }
+    }
+  }
+}

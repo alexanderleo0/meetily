@@ -1,3 +1,4 @@
+use crate::audio::transcription::TranscriptionProvider;
 // Retranscription module - allows re-processing stored audio with different settings
 
 use crate::audio::decoder::decode_audio_file;
@@ -102,11 +103,11 @@ pub async fn start_retranscription<R: Runtime>(
     // Reset cancellation flag
     RETRANSCRIPTION_CANCELLED.store(false, Ordering::SeqCst);
 
-    let use_parakeet = provider.as_deref() == Some("parakeet");
+    let cleanup_provider = provider.clone().unwrap_or_else(|| "whisper".into());
     let result = run_retranscription(app.clone(), meeting_id.clone(), meeting_folder_path, language, model, provider).await;
 
     // Unload the engine after the batch job (success, failure, or cancellation)
-    super::common::unload_engine_after_batch(use_parakeet).await;
+    super::common::unload_engine_after_batch(&cleanup_provider).await;
 
     // Guard will automatically clear flag on drop
     // No need for manual: RETRANSCRIPTION_IN_PROGRESS.store(false, Ordering::SeqCst);
@@ -183,6 +184,10 @@ async fn run_retranscription<R: Runtime>(
 
     // Determine which provider to use (default to whisper)
     let use_parakeet = provider.as_deref() == Some("parakeet");
+    let use_gigaam = provider.as_deref() == Some("gigaam");
+    if !matches!(provider.as_deref(), None | Some("whisper" | "localWhisper" | "parakeet" | "gigaam")) {
+        return Err(anyhow!("Unsupported transcription provider"));
+    }
 
     info!(
         "Starting retranscription for meeting {} with language {:?}, model {:?}, provider {:?}",
@@ -300,7 +305,7 @@ async fn run_retranscription<R: Runtime>(
     emit_progress(&app, &meeting_id, "transcribing", 25, "Loading transcription engine...");
 
     // Initialize the appropriate engine once (not per-segment)
-    let whisper_engine = if !use_parakeet {
+    let whisper_engine = if !use_parakeet && !use_gigaam {
         Some(get_or_init_whisper(&app, model.as_deref()).await?)
     } else {
         None
@@ -310,6 +315,10 @@ async fn run_retranscription<R: Runtime>(
     } else {
         None
     };
+    let gigaam_engine = if use_gigaam {
+        Some(crate::gigaam_engine::load(&app, model.as_deref().unwrap_or(crate::gigaam_engine::MODEL)).await?)
+    } else { None };
+
 
     // Split very long segments at silence boundaries for better transcription quality.
     // Hard cuts at arbitrary sample positions lose words at boundaries. Instead, scan
@@ -369,7 +378,10 @@ async fn run_retranscription<R: Runtime>(
         }
 
         // Transcribe this segment
-        let (text, conf) = if use_parakeet {
+        let (text, conf) = if use_gigaam {
+            let result = gigaam_engine.as_ref().unwrap().transcribe(segment.samples.clone(), Some("ru".into())).await?;
+            (result.text, 0.0f32)
+        } else if use_parakeet {
             let engine = parakeet_engine.as_ref().unwrap();
             let text = engine
                 .transcribe_audio(segment.samples.clone())

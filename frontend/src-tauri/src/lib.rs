@@ -49,6 +49,7 @@ pub mod anthropic;
 pub mod groq;
 pub mod openrouter;
 pub mod parakeet_engine;
+pub mod gigaam_engine;
 pub mod state;
 pub mod summary;
 pub mod tray;
@@ -653,6 +654,12 @@ pub fn run() {
             whisper_engine::commands::whisper_download_model,
             whisper_engine::commands::whisper_cancel_download,
             whisper_engine::commands::whisper_delete_corrupted_model,
+            gigaam_engine::gigaam_init,
+            gigaam_engine::gigaam_get_available_models,
+            gigaam_engine::gigaam_has_available_models,
+            gigaam_engine::gigaam_load_model,
+            gigaam_engine::gigaam_download_model,
+            gigaam_engine::gigaam_cancel_download,
             // Parakeet engine commands
             parakeet_engine::commands::parakeet_init,
             parakeet_engine::commands::parakeet_get_available_models,
