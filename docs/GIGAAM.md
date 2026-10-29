@@ -53,6 +53,9 @@ available Parakeet and Whisper models. Both batch paths use the same GigaAM engi
 existing decoding/resampling/VAD, database persistence, cancellation and timestamp
 handling. Batch completion and recording shutdown unload GigaAM when safe.
 Confidence is unavailable; timestamps are phrase boundaries, not word alignment.
+On macOS, model loading and inference hold a scoped user-initiated activity so
+background work is not treated as idle app work. The activity ends even on errors
+and permits normal system idle sleep. See [Apple’s activity guidance](https://developer.apple.com/library/archive/documentation/Performance/Conceptual/power_efficiency_guidelines_osx/PrioritizeWorkAtTheAppLevel.html).
 
 ## Native verification
 

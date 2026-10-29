@@ -12,6 +12,19 @@ use std::{
 use tauri::{Listener, Manager};
 
 async fn check(app: tauri::AppHandle, args: Vec<String>) -> Result<Value> {
+    // Stage/percentage only: never print private transcript text.
+    for event in ["import-progress", "retranscription-progress"] {
+        app.listen(event, move |e| {
+            if let Ok(value) = serde_json::from_str::<Value>(e.payload()) {
+                if let Some(progress) = value["progress_percentage"].as_u64() {
+                    eprintln!(
+                        "{event}: {} {progress}%",
+                        value["stage"].as_str().unwrap_or("")
+                    );
+                }
+            }
+        });
+    }
     let db = DatabaseManager::new_from_app_handle(&app).await?;
     app.manage(AppState {
         db_manager: db.clone(),

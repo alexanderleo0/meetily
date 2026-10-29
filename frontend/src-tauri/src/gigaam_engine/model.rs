@@ -16,6 +16,10 @@ pub struct GigaModel {
 
 impl GigaModel {
     pub fn load(dir: &Path) -> Result<Self> {
+        super::activity::run(|| Self::load_inner(dir))
+    }
+
+    fn load_inner(dir: &Path) -> Result<Self> {
         crate::ensure_onnx_runtime_available()?;
         let session = |name: &str| -> Result<Session> {
             Ok(Session::builder()?
@@ -51,6 +55,10 @@ impl GigaModel {
     }
 
     pub fn transcribe(&mut self, audio: &[f32]) -> Result<String> {
+        super::activity::run(|| self.transcribe_inner(audio))
+    }
+
+    fn transcribe_inner(&mut self, audio: &[f32]) -> Result<String> {
         if audio.is_empty() {
             return Ok(String::new());
         }

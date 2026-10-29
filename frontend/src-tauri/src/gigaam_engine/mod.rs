@@ -1,3 +1,4 @@
+mod activity;
 pub mod model;
 
 use crate::audio::transcription::{TranscriptResult, TranscriptionError, TranscriptionProvider};
