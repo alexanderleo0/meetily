@@ -39,3 +39,24 @@ transcript events, import pipeline, database and retranscription pipeline. It fe
 a recorded speech excerpt into the live queue; hardware capture permissions are
 left to the user. The microphone and system audio devices are not activated by
 this automated verification.
+
+## Full application pipeline result
+
+- Saved configuration was round-tripped through the actual Tauri API with provider `gigaam`.
+- Live VAD queue/worker emitted 1 finalized transcript event from the supplied recording.
+- Full import: **76 nonempty transcript segments**, persisted to SQLite and the meeting's `transcripts.json`.
+- Full retranscription: **76 segments**, with **identical text** to the imported transcript.
+- Imported audio copy matches the original file's SHA256.
+- Recording duration reported by the app: 1714.05 seconds.
+- Import wall time: 75.17 seconds; retranscription wall time: 163.48 seconds.
+  These include decoding, resampling, VAD, model loading and persistence, and ran
+  alongside build work. They are not controlled ASR benchmarks.
+
+A first headless run was heavily deprioritized while the application was invisible.
+Model loading and inference now use a scoped macOS user-initiated activity, allowing
+normal idle sleep, and the complete background validation run passes.
+
+The application's batch VAD uses 2-second silence redemption and up to 25-second
+segments with silence-aware splitting, so its 76 segments differ from the Python
+prototype's 165 shared comparison segments. Playback timestamps remain relative
+to the original recording.
